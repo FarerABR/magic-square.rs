@@ -1,3 +1,5 @@
+use std::vec;
+
 fn main() {
     println!("Please enter the number: ");
     let mut input = String::new();
@@ -10,6 +12,8 @@ fn main() {
         eprintln!("the number must be bigger than 2");
         return;
     }
+
+    #[allow(unused_assignments)]
     let mut square = Vec::new();
     if n % 2 == 1 {
         square = odd_square(n);
@@ -18,7 +22,7 @@ fn main() {
     } else {
         square = s_even_square(n);
     }
-    let dec = number_of_dec(&square[square.len() / 2 as usize][square.len() / 2 as usize]);
+    let dec = number_of_dec(&(n * n));
     show_square(&square, dec);
 }
 
@@ -43,18 +47,55 @@ fn odd_square(n: i32) -> Vec<Vec<i32>> {
 }
 
 fn d_even_square(n: i32) -> Vec<Vec<i32>> {
-    todo!()
+    let mut out: Vec<Vec<i32>> = vec![vec![0; n as usize]; n as usize];
+    (0..n).for_each(|i| {
+        (0..n).for_each(|j| {
+            out[i as usize][j as usize] = (n * i) + j + 1;
+        })
+    });
+
+    (0..n / 4).for_each(|i| {
+        (0..n / 4).for_each(|j| {
+            out[i as usize][j as usize] = n.pow(2) + 1 - out[i as usize][j as usize];
+        })
+    });
+
+    (0..n / 4).for_each(|i| {
+        (3 * n / 4..n).for_each(|j| {
+            out[i as usize][j as usize] = n.pow(2) + 1 - out[i as usize][j as usize];
+        })
+    });
+
+    (3 * n / 4..n).for_each(|i| {
+        (0..n / 4).for_each(|j| {
+            out[i as usize][j as usize] = n.pow(2) + 1 - out[i as usize][j as usize];
+        })
+    });
+
+    (3 * n / 4..n).for_each(|i| {
+        (3 * n / 4..n).for_each(|j| {
+            out[i as usize][j as usize] = n.pow(2) + 1 - out[i as usize][j as usize];
+        })
+    });
+
+    (n / 4..3 * n / 4).for_each(|i| {
+        (n / 4..3 * n / 4).for_each(|j| {
+            out[i as usize][j as usize] = n.pow(2) + 1 - out[i as usize][j as usize];
+        })
+    });
+    out
+    // todo!()
 }
 
 fn s_even_square(n: i32) -> Vec<Vec<i32>> {
     todo!()
 }
 
-fn show_square(sq: &Vec<Vec<i32>>, dec: usize) {
+fn show_square(sq: &Vec<Vec<i32>>, dec: i32) {
     (0..sq.len()).for_each(|i| {
         (0..sq.len()).for_each(|j| {
             print!("{}", sq[i][j]);
-            (0..=(dec - number_of_dec(&sq[i][j]))).for_each(|_| {
+            (0..=(dec as i32 - number_of_dec(&sq[i][j])).abs()).for_each(|_| {
                 print!(" ");
             })
         });
@@ -62,12 +103,12 @@ fn show_square(sq: &Vec<Vec<i32>>, dec: usize) {
     })
 }
 
-fn number_of_dec(input: &i32) -> usize {
+fn number_of_dec(input: &i32) -> i32 {
     let mut num = input.clone();
     let mut out = 0;
     while num != 0 {
         num /= 10;
         out += 1;
     }
-    out as usize
+    out
 }
